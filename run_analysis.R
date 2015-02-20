@@ -1,30 +1,31 @@
 ## Merge the training and the test sets to create one data set.
-test <- read.table("test/X_test.txt")
-test <- test[, !duplicated(colnames(test))]
-train <- read.table("train/X_train.txt")
-train <- train[, !duplicated(colnames(train))]
-activity_labels <- read.table("activity_labels.txt")
-names(activity_labels) <- c("index", "activity")
-subject_test <- read.table("test/subject_test.txt")
-subject_train <- read.table("train/subject_train.txt")
-
+testData <- read.table("test/X_test.txt")
+testData <- testData[, !duplicated(colnames(test))]
+trainData <- read.table("train/X_train.txt")
+trainData <- trainData[, !duplicated(colnames(train))]
+activityLabels <- read.table("activity_labels.txt")
+names(activityLabels) <- c("index", "activity")
 y_train <- read.table("train/y_train.txt")
 y_test <- read.table("test/y_test.txt")
 y_bind <-rbind(y_test, y_train)
 names(y_bind) <- "activity"
-y_bind <- unlist(lapply(y_bind$activity, function(x){y_bind$activity[y_bind$activity == x] <- as.character(activity_labels[x,2])}))
-
-test_train <- rbind(test,train)
+y_bind <- unlist(lapply(y_bind$activity, 
+  function(x) { 
+    y_bind$activity[y_bind$activity == x] <- as.character(activityLabels[x,2])
+  }))
+testTrainData <- rbind(testData,trainData)
 features <- read.table("features.txt")
-names(test_train) <- features$V2
+names(testTrainData) <- features$V2
 
 ## Extract only the measurements on the mean and standard deviation for 
 ## each measurement. 
-columns <- colnames(test_train)
+columns <- colnames(testTrainData)
 std_mean_columns <- grep ("[Ss]td|[Mm]ean", columns)
-std_mean <- test_train[std_mean_columns]
+std_mean <- testTrainData[std_mean_columns]
 
 ## Use descriptive activity names to name the activities in the data set
+subject_test <- read.table("test/subject_test.txt")
+subject_train <- read.table("train/subject_train.txt")
 subject <- rbind(subject_test, subject_train)
 names(subject) <- "subject"
 activity_subject <- cbind(subject, y_bind)
